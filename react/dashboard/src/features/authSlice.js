@@ -10,6 +10,14 @@ export const login = createAsyncThunk("login", async (info) => {
   return res.data;
 });
 
+export const checkOnUser = createAsyncThunk("checkOnUser", async () => {
+  const res = await axios.post(`${backendUrl}/admin/login`, {
+    username: window.localStorage.getItem("username"),
+    password: window.localStorage.getItem("password"),
+  });
+  return res.data;
+});
+
 export const edit = createAsyncThunk("edit", async (info) => {
   const res = await axios.post(
     `${backendUrl}/admin/edit/${window.localStorage.getItem(
@@ -57,6 +65,12 @@ export const authSlice = createSlice({
         } else {
           window.localStorage.setItem("username", action.payload.username);
           window.localStorage.setItem("password", action.payload.password);
+          window.location.reload();
+        }
+      })
+      .addCase(checkOnUser.fulfilled, (_, action) => {
+        if (action.payload.message) {
+          window.localStorage.clear();
           window.location.reload();
         }
       });
