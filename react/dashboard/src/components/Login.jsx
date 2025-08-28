@@ -1,6 +1,7 @@
-import { useCallback, useState } from "react";
-import { login } from "../features/authSlice";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { login } from "../features/authSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -13,30 +14,106 @@ const Login = () => {
 
   const handleLogin = useCallback(() => {
     if (!info.username || !info.password) return;
+
     dispatch(login(info));
   }, [dispatch, info]);
 
-  return (
-    <div>
-      <h1>Login</h1>
-      {error && <p className="text-red-600 font-bold">{error}</p>}
-      <input
-        type="text"
-        placeholder="username"
-        onChange={(e) => setInfo({ ...info, username: e.target.value })}
-      />
-      <input
-        type="password"
-        placeholder="password"
-        onChange={(e) => setInfo({ ...info, password: e.target.value })}
-      />
-      {loading ? (
-        <p className="text-red-600 font-bold">Loading...</p>
-      ) : (
-        <button onClick={handleLogin}>login</button>
-      )}
-    </div>
-  );
+  const handleChange = useCallback((e) => {
+    setInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }, []);
+
+  const formElement = useMemo(() => {
+    return (
+      <>
+        <TextField
+          placeholder="username"
+          variant="outlined"
+          type="text"
+          label="username"
+          onChange={handleChange}
+          name="username"
+          autoComplete="off"
+        />
+        <TextField
+          placeholder="password"
+          variant="outlined"
+          type="password"
+          label="password"
+          onChange={handleChange}
+          name="password"
+          autoComplete="off"
+        />
+      </>
+    );
+  }, [handleChange]);
+
+  const element = useMemo(() => {
+    return (
+      <Box
+        sx={{
+          display: "grid",
+          placeContent: "center",
+          width: "100%",
+          height: "100vh",
+        }}
+      >
+        <Box
+          sx={{
+            bgcolor: "white",
+            display: "flex",
+            flexDirection: "column",
+            width: { xs: "300px", sm: "400px" },
+            gap: "20px",
+            boxShadow: "0px 0 20px 5px rgba(0, 0, 0, 0.1)",
+            padding: "20px",
+            borderRadius: "10px",
+          }}
+        >
+          <Typography
+            variant="h4"
+            align="center"
+            textTransform={"uppercase"}
+            fontWeight={"bold"}
+          >
+            login
+          </Typography>
+
+          {error ? (
+            <Typography
+              align="center"
+              textTransform={"capitalize"}
+              color="red"
+              fontWeight={"bold"}
+            >
+              credentials error.
+            </Typography>
+          ) : (
+            <Typography
+              align="center"
+              textTransform={"capitalize"}
+              sx={{ opacity: 0.5 }}
+            >
+              enter your credentials.
+            </Typography>
+          )}
+
+          {formElement}
+
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleLogin}
+            disabled={loading}
+            loading={loading}
+          >
+            login
+          </Button>
+        </Box>
+      </Box>
+    );
+  }, [error, formElement, handleLogin, loading]);
+
+  return element;
 };
 
 export default Login;

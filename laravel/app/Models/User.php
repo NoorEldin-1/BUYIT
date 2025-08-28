@@ -22,7 +22,9 @@ class User extends Authenticatable
         'full_name',
         'username',
         'email',
+        "google_id",
         'password',
+        'role',
     ];
 
     public function saves()

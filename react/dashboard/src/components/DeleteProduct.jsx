@@ -1,36 +1,52 @@
-import { useDispatch } from "react-redux";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { changeDialog } from "../features/dialogSlice";
 import { useCallback } from "react";
 import { deleteProduct } from "../features/productSlice";
-import { useNavigate, useParams } from "react-router";
 
 const DeleteProduct = () => {
+  const open = useSelector((state) => state.dialog);
+  const loading = useSelector((state) => state.product.deleteProductLoading);
+  const productId = useSelector((state) => state.product.productId);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { category_id, product_id } = useParams();
+
+  const handleClose = useCallback(() => {
+    dispatch(changeDialog("no dialog"));
+  }, [dispatch]);
+
   const handleDeleteProduct = useCallback(() => {
-    const info = {
-      category_id,
-      product_id,
-    };
-    dispatch(deleteProduct(info));
-    navigate(`/allProducts/${category_id}`);
-  }, [category_id, dispatch, navigate, product_id]);
+    dispatch(deleteProduct(productId));
+  }, [dispatch, productId]);
   return (
-    <div>
-      <h1>Delete Product</h1>
-      <button
-        onClick={handleDeleteProduct}
-        className="text-red-600 font-bold cursor-pointer mr-2"
-      >
-        delete
-      </button>
-      <button
-        onClick={() => navigate(`/allProducts/${category_id}`)}
-        className="text-green-600 font-bold cursor-pointer"
-      >
-        cancel
-      </button>
-    </div>
+    <Dialog open={open === "deleteProduct"} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ textAlign: "center", textTransform: "uppercase" }}>
+        delete product
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText sx={{ textAlign: "center" }}>
+          Are you sure you want to delete this product?, this action is
+          irreversible.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>cancel</Button>
+        <Button
+          onClick={handleDeleteProduct}
+          color="error"
+          disabled={loading}
+          loading={loading}
+        >
+          delete
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

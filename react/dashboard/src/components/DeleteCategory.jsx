@@ -1,44 +1,52 @@
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import { deleteCategory, showCategory } from "../features/categorySlice";
-import { useCallback, useEffect } from "react";
+import { changeDialog } from "../features/dialogSlice";
+import { useCallback } from "react";
+import { deleteCategory } from "../features/categorySlice";
 
 const DeleteCategory = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const open = useSelector((state) => state.dialog);
+  const loading = useSelector((state) => state.category.deleteCategoryLoading);
   const categoryInfo = useSelector((state) => state.category.categoryInfo);
-  const loading = useSelector((state) => state.category.showCategoryLoading);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(showCategory(id));
-  }, [dispatch, id]);
+  const handleClose = useCallback(() => {
+    dispatch(changeDialog("no dialog"));
+  }, [dispatch]);
 
   const handleDeleteCategory = useCallback(() => {
-    if (!categoryInfo) return;
-    dispatch(deleteCategory(id));
-    navigate(`/allCategory`);
-  }, [categoryInfo, dispatch, id, navigate]);
-
+    dispatch(deleteCategory(categoryInfo.id));
+  }, [categoryInfo, dispatch]);
   return (
-    <div>
-      <h1>Delete Category</h1>
-      {loading ? (
-        <p className="text-red-600 font-bold">Loading...</p>
-      ) : (
-        <>
-          <p className="text-red-600 font-bold" onClick={handleDeleteCategory}>
-            yes delete
-          </p>
-          <p
-            className="text-green-600 font-bold"
-            onClick={() => navigate(`/allCategory`)}
-          >
-            no cancel
-          </p>
-        </>
-      )}
-    </div>
+    <Dialog open={open === "deleteCategory"} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ textAlign: "center", textTransform: "uppercase" }}>
+        delete category
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText sx={{ textAlign: "center" }}>
+          Are you sure you want to delete this category?, this action is
+          irreversible.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>cancel</Button>
+        <Button
+          onClick={handleDeleteCategory}
+          color="error"
+          disabled={loading}
+          loading={loading}
+        >
+          delete
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

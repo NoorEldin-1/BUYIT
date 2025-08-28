@@ -1,79 +1,155 @@
-import Logout from "./Logout";
+import { styled } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import MuiAppBar from "@mui/material/AppBar";
+import { useEffect, useState } from "react";
+import MainWidget from "./MainWidget";
+import Side from "./Side";
+import NavBar from "./NavBar";
+import { Route, Routes } from "react-router";
 import EditAccount from "./EditAccount";
-import { Link, Route, Routes } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import Logout from "./Logout";
 import CreateCategory from "./CreateCategory";
-import EditCategory from "./EditCategory";
-import DeleteCategory from "./DeleteCategory";
-import ShowCategory from "./ShowCategory";
 import AllCategory from "./AllCategory";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { checkOnUser } from "../features/authSlice";
+import DeleteCategory from "./DeleteCategory";
+import EditCategory from "./EditCategory";
 import CreateProduct from "./CreateProduct";
-import EditProduct from "./EditProduct";
-import DeleteProduct from "./DeleteProduct";
-import ShowProduct from "./ShowProduct";
 import AllProducts from "./AllProducts";
+import EditProduct from "./EditProduct";
+import DeleteImage from "./DeleteImage";
+import DeleteProduct from "./DeleteProduct";
+import CategoryProducts from "./CategoryProducts";
+import AllUsers from "./AllUsers";
+import DeleteUser from "./DeleteUser";
+import AddEvent from "./AddEvent";
+import Events from "./Events";
+import RemoveEvent from "./RemoveEvent";
+import { getLatestUsers, getTotalUsers } from "../features/userSlice";
+import {
+  getLatestCategories,
+  getTotalCategories,
+} from "../features/categorySlice";
+import { getLatestProducts, getTotalProducts } from "../features/productSlice";
+
+export const drawerWidth = 240;
+
+export const Main = styled("main", {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
+  transition: theme.transitions.create("margin", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  marginLeft: `-${drawerWidth}px`,
+  variants: [
+    {
+      props: ({ open }) => open,
+      style: {
+        transition: theme.transitions.create("margin", {
+          easing: theme.transitions.easing.easeOut,
+          duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
+      },
+    },
+  ],
+}));
+
+export const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme }) => ({
+  transition: theme.transitions.create(["margin", "width"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  variants: [
+    {
+      props: ({ open }) => open,
+      style: {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: `${drawerWidth}px`,
+        transition: theme.transitions.create(["margin", "width"], {
+          easing: theme.transitions.easing.easeOut,
+          duration: theme.transitions.duration.enteringScreen,
+        }),
+      },
+    },
+  ],
+}));
+
+export const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(0, 1),
+  ...theme.mixins.toolbar,
+  justifyContent: "flex-end",
+}));
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  const dialog = useSelector((state) => state.dialog);
 
   useEffect(() => {
-    dispatch(checkOnUser());
+    let intervalId;
+
+    const fetchData = async () => {
+      await dispatch(getTotalUsers());
+      await dispatch(getTotalCategories());
+      await dispatch(getTotalProducts());
+      await dispatch(getLatestUsers());
+      await dispatch(getLatestCategories());
+      await dispatch(getLatestProducts());
+    };
+
+    fetchData();
+
+    intervalId = setInterval(fetchData, 30 * 60 * 1000);
+
+    return () => clearInterval(intervalId);
   }, [dispatch]);
 
   return (
-    <div>
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <Side open={open} handleDrawerClose={handleDrawerClose} />
+      <NavBar open={open} handleDrawerOpen={handleDrawerOpen} />
       <Routes>
+        <Route path="/" element={<MainWidget open={open} />} />
+        <Route path="/edit-account" element={<EditAccount open={open} />} />
+        <Route path="/all-categories" element={<AllCategory open={open} />} />
+        <Route path="/create-product" element={<CreateProduct open={open} />} />
+        <Route path="/all-products" element={<AllProducts open={open} />} />
+        <Route path="/edit-product/:id" element={<EditProduct open={open} />} />
         <Route
-          index
-          element={
-            <>
-              <h1>Dashboard</h1>
-              <Logout />
-              <Link
-                to="/editAccount"
-                className="text-green-600 cursor-pointer block"
-              >
-                Edit Account
-              </Link>
-              <Link
-                to="/createCategory"
-                className="text-green-600 cursor-pointer block"
-              >
-                Create Category
-              </Link>
-              <Link
-                to="/allCategory"
-                className="text-green-600 cursor-pointer block"
-              >
-                All Category
-              </Link>
-            </>
-          }
+          path="/category/:id"
+          element={<CategoryProducts open={open} />}
         />
-        <Route path="/editAccount" element={<EditAccount />} />
-        <Route path="/createCategory" element={<CreateCategory />} />
-        <Route path="/editCategory/:id" element={<EditCategory />} />
-        <Route path="/deleteCategory/:id" element={<DeleteCategory />} />
-        <Route path="/showCategory/:id" element={<ShowCategory />} />
-        <Route path="/allCategory" element={<AllCategory />} />
-        <Route path="/createProduct/:category_id" element={<CreateProduct />} />
-        <Route
-          path="/editProduct/:category_id/:product_id"
-          element={<EditProduct />}
-        />
-        <Route
-          path="/deleteProduct/:category_id/:product_id"
-          element={<DeleteProduct />}
-        />
-        <Route
-          path="/showProduct/:category_id/:product_id"
-          element={<ShowProduct />}
-        />
-        <Route path="/allProducts/:category_id" element={<AllProducts />} />
+        <Route path="/users" element={<AllUsers open={open} />} />
+        <Route path="/events" element={<Events open={open} />} />
       </Routes>
-    </div>
+      {dialog === "logout" && <Logout />}
+      {dialog === "createCategory" && <CreateCategory />}
+      {dialog === "deleteCategory" && <DeleteCategory />}
+      {dialog === "editCategory" && <EditCategory />}
+      {dialog === "deleteImage" && <DeleteImage />}
+      {dialog === "deleteProduct" && <DeleteProduct />}
+      {dialog === "deleteUser" && <DeleteUser />}
+      {dialog === "addEvent" && <AddEvent />}
+      {dialog === "removeEvent" && <RemoveEvent />}
+    </Box>
   );
 };
 

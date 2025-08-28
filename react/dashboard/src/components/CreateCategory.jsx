@@ -1,32 +1,62 @@
-import { useCallback, useState } from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import { changeDialog } from "../features/dialogSlice";
+import { useCallback, useState } from "react";
 import { createCategory } from "../features/categorySlice";
 
 const CreateCategory = () => {
-  const dispatch = useDispatch();
-  const [name, setName] = useState("");
+  const open = useSelector((state) => state.dialog);
   const loading = useSelector((state) => state.category.createCategoryLoading);
+  const [name, setName] = useState("");
+  const dispatch = useDispatch();
+
+  const handleClose = useCallback(() => {
+    dispatch(changeDialog("no dialog"));
+  }, [dispatch]);
 
   const handleCreateCategory = useCallback(() => {
-    if (!name) return;
+    if (!name.trim() || name.trim().length > 100) return;
     dispatch(createCategory(name));
   }, [dispatch, name]);
-
   return (
-    <div>
-      <h1>Create Category</h1>
-      <input
-        value={name}
-        type="text"
-        placeholder="category name"
-        onChange={(e) => setName(e.target.value)}
-      />
-      {loading ? (
-        <p className="text-red-600 font-bold">Loading...</p>
-      ) : (
-        <button onClick={handleCreateCategory}>create</button>
-      )}
-    </div>
+    <Dialog open={open === "createCategory"} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ textAlign: "center", textTransform: "uppercase" }}>
+        create category
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText sx={{ textAlign: "center" }}>
+          enter category name and click create, if you want to discard click
+          cancel.
+        </DialogContentText>
+        <TextField
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          label="category name"
+          variant="outlined"
+          fullWidth
+          sx={{ mt: 2 }}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>cancel</Button>
+        <Button
+          onClick={handleCreateCategory}
+          color="success"
+          disabled={loading}
+          loading={loading}
+        >
+          create
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

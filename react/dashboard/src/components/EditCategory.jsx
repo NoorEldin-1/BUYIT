@@ -1,44 +1,66 @@
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import { editCategory, showCategory } from "../features/categorySlice";
-import { useCallback, useEffect, useState } from "react";
-
+import { changeDialog } from "../features/dialogSlice";
+import { useCallback, useState } from "react";
+import { editCategory } from "../features/categorySlice";
 const EditCategory = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const open = useSelector((state) => state.dialog);
+  const loading = useSelector((state) => state.category.editCategoryLoading);
   const categoryInfo = useSelector((state) => state.category.categoryInfo);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(categoryInfo.name);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    setName(categoryInfo.name);
-  }, [categoryInfo.name]);
-
-  useEffect(() => {
-    dispatch(showCategory(id));
-  }, [dispatch, id]);
+  const handleClose = useCallback(() => {
+    dispatch(changeDialog("no dialog"));
+  }, [dispatch]);
 
   const handleEditCategory = useCallback(() => {
-    if (!name) return;
+    if (!name.trim() || name.trim().length > 100) return;
     const info = {
-      id,
-      name,
+      id: categoryInfo.id,
+      name: name,
     };
     dispatch(editCategory(info));
-    navigate(`/allCategory`);
-  }, [dispatch, id, name, navigate]);
-
+  }, [categoryInfo.id, dispatch, name]);
   return (
-    <div>
-      <h1>Edit Category</h1>
-      <input
-        type="text"
-        placeholder="category name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <button onClick={handleEditCategory}>edit</button>
-    </div>
+    <Dialog open={open === "editCategory"} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ textAlign: "center", textTransform: "uppercase" }}>
+        edit category
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText sx={{ textAlign: "center" }}>
+          enter new category name and click edit, if you want to discard click
+          cancel.
+        </DialogContentText>
+        <TextField
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          label="new category name"
+          variant="outlined"
+          fullWidth
+          sx={{ mt: 2 }}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>cancel</Button>
+        <Button
+          onClick={handleEditCategory}
+          color="success"
+          disabled={loading}
+          loading={loading}
+        >
+          edit
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

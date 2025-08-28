@@ -1,1 +1,13 @@
-@import "tailwindcss";
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.swiper {
+  --swiper-pagination-color: #ad1457;
+}
+
+.swiper {
+  --swiper-pagination-bullet-inactive-color: #ccc;
+  --swiper-pagination-bullet-inactive-opacity: 1;
+}

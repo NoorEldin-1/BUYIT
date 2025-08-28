@@ -2,150 +2,234 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Product;
-use Illuminate\Http\Request;
+use App\Models\ProductImage;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
+    public function total() {
+        $user = request()->user();
+        if ($user->role != "admin") {
+            return response()->json(["message" => "unauthorized"]);
+        } else {
+            $total = Product::count();
+            return response()->json(["total" => $total]);
+        }
+    }
     public function create($category_id) {
-        $admin = Admin::where("username", request()->input("adminUsername"))->where("password", request()->input("adminPassword"))->get()->first();
-        if ($admin) {
-
+        $user = request()->user();
+        if ($user->role != "admin") {
+            return response()->json(["message" => "unauthorized"]);
+        } else {
             $category = Category::find($category_id);
-            
             if (!$category) {
                 return response()->json(["message" => "category not found"]);
-            }
-            
-            $validator = Validator::make(request()->all(), [
-            "name" => "required|string|max:255",
-            "info" => "required|string",
-            "price" => "required|integer",
-            "image" => "required|mimes:jpeg,png,jpg,gif,svg,webp,bmp,tiff,tif,ico,heic,heif,avif",
-            ]);
+            } else {
+                $validator = Validator::make(request()->all(), [
+                    "name" => "required|string|max:255",
+                    "info" => "required|string",
+                    "price" => "required|numeric",
+                    "image" => "required|mimes:jpeg,png,jpg,gif,svg,webp,bmp,tiff,tif,ico,heic,heif,avif",
+                    "images.*" => "required|mimes:jpeg,png,jpg,gif,svg,webp,bmp,tiff,tif,ico,heic,heif,avif",
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(["errors" => $validator->errors()]);
+                } else {
+                    $image = request()->file("image")->store("images", "public");
+                    
+                    $product = Product::create([
+                        "name" => request("name"),
+                        "info" => request("info"),
+                        "price" => request("price"),
+                        "image" => $image,
+                        "category_id" => $category_id,
+                    ]);
 
-            if ($validator->fails()) {
-                return response()->json($validator->errors());
-            }
+                    if (request()->hasFile('images')) {
+                        foreach (request()->file('images') as $image) {
+                            $path = $image->store('images', 'public');
+                            ProductImage::create([
+                                'image' => $path,
+                                'product_id' => $product->id,
+                            ]);
+                        }
+                    }
 
-            $imagePath = request()->file("image")->store("images", "public");
-            
-            $product = Product::create([
-                "name" => request("name"),
-                "info" => request("info"),
-                "price" => request("price"),
-                "image" => $imagePath,
-                "category_id" => $category_id,
-            ]);
-            
-            $product->image = Storage::url($product->image);
-            
-            return response()->json($product);
-        } else {
-            return response()->json(["message" => "credentials error"]); 
+                    $product->image = Storage::url($product->image);
+                    return response()->json(["product" => $product]);
+                }
+            }
         }
     }
 
-    public function edit($category_id, $product_id) {
-        $admin = Admin::where("username", request()->input("adminUsername"))->where("password", request()->input("adminPassword"))->get()->first();
-        if ($admin) {
-            $category = Category::find($category_id);
-            if (!$category) {
-                return response()->json(["message" => "category not found"]);
-            }
+    public function edit($product_id) {
+        $user = request()->user();
+        if ($user->role != "admin") {
+            return response()->json(["message"=> "unauthorized"]);
+        } else {
             $product = Product::find($product_id);
             if (!$product) {
-                return response()->json(["message" => "product not found"]);
+                return response()->json(["message"=> "product not found"]);
+            } else {
+                $validator = Validator::make(request()->all(), [
+                    "name" => "required|string|max:255",
+                    "info"=> "required|string",
+                    "price"=> "required|numeric",
+                    "category_id"=> "required|exists:categories,id",
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(["errors"=> $validator->errors()]);
+                } else {
+                    if (request()->hasFile("image")) {
+                        $validator = Validator::make(request()->all(), [
+                            "image"=> "required|mimes:jpeg,png,jpg,gif,svg,webp,bmp,tiff,tif,ico,heic,heif,avif",
+                        ]);
+                        if ($validator->fails()) {
+                            return response()->json(["errors"=> $validator->errors()]);
+                        } else {
+                            Storage::disk("public")->delete($product->image);
+                            $product->image = request()->file("image")->store("images", "public");
+                        }
+                    }
+                    if (request()->hasFile("images")) {
+                        $validator = Validator::make(request()->all(), [
+                            "images.*"=> "required|mimes:jpeg,png,jpg,gif,svg,webp,bmp,tiff,tif,ico,heic,heif,avif",
+                        ]);
+                        if ($validator->fails()) {
+                            return response()->json(["errors"=> $validator->errors()]);
+                        } else {
+                            foreach (request()->file("images") as $image) {
+                                $path = $image->store("images", "public");
+                                ProductImage::create([
+                                    "image"=> $path,
+                                    "product_id"=> $product->id,
+                                ]);
+                            }
+                        }
+                    }
+                    $product->name = request("name");
+                    $product->info = request("info");
+                    $product->price = request("price");
+                    $product->category_id = request("category_id");
+                    $product->save();
+                    return response()->json(["product" => $product]);
+                }
             }
+        }
+    }
 
-            $validator = Validator::make(request()->all(), [
-            "name" => "required|string|max:255",
-            "info" => "required|string",
-            "price" => "required|integer",
-            "image" => "mimes:jpeg,png,jpg,gif,svg,webp,bmp,tiff,tif,ico,heic,heif,avif",
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json($validator->errors());
-            }
-
-            if (request()->hasFile("image")) {
+    public function delete($product_id) {
+        $user = request()->user();
+        if ($user->role != "admin") {
+            return response()->json(["message"=> "unauthorized"]);
+        } else {
+            $product = Product::find($product_id);
+            if (!$product) {
+                return response()->json(["message"=> "product not found"]);
+            } else {
                 if (Storage::disk("public")->exists($product->image)) {
                     Storage::disk("public")->delete($product->image);
                 }
-                $imagePath = request()->file("image")->store("images", "public");
-                $product->image = $imagePath;
+                foreach ($product->images as $image) {
+                    if (Storage::disk("public")->exists($image->image)) {
+                        Storage::disk("public")->delete($image->image);
+                    }
+                }
+                $product->delete();
+                return response()->json(["message"=> "product deleted"]);
             }
-
-            $product->name = request("name");
-            $product->info = request("info");
-            $product->price = request("price");
-            $product->save();
-
-            if (request()->hasFile("image")) {
-                $product->image = Storage::url($product->image);
-            }
-
-            return response()->json($product);
-        } else {
-            return response()->json(["message" => "credentials error"]); 
         }
     }
 
-    public function delete($category_id, $product_id) {
-        $admin = Admin::where("username", request("adminUsername"))->where("password", request("adminPassword"))->get()->first();
-        if ($admin) {
-            $category = Category::find($category_id);
-            if (!$category) {
-                return response()->json(["message" => "category not found"]);
-            }
-
-            $product = Product::find($product_id);
-            if (!$product) {
-                return response()->json(["message" => "product not found"]);
-            }
-
-            if (Storage::disk("public")->exists($product->image)) {
-                Storage::disk("public")->delete($product->image);
-            }
-
-            $product->delete();
-            return response()->json(["message" => "product deleted"]);
-        } else {
-            return response()->json(["message" => "credentials error"]); 
-        }
-    }
-
-    public function getAll($category_id) {
-        $category = Category::find($category_id);
-        if (!$category) {
-            return response()->json(["message" => "category not found"]);
-        }
-        $products = Product::where("category_id", $category_id)->get();
-
+    public function allProducts() {
+        $products = Product::with("category")->latest()->simplePaginate(5);
         foreach ($products as $product) {
             $product->image = Storage::url($product->image);
         }
-
-        return response()->json($products);
+        return response()->json(["products" => $products]);
     }
 
-    public function show($category_id, $product_id) {
-        $category = Category::find($category_id);
-        if (!$category) {
-            return response()->json(["message" => "category not found"]);
+    public function addEvent($product_id) {
+        $user = request()->user();
+        if ($user->role != "admin") {
+            return response()->json(["message"=> "unauthorized"]);
+        } else {
+            $product = Product::find($product_id);
+            if (!$product) {
+                return response()->json(["message"=> "product not found"]);
+            } else {
+                $product->is_event = "yes";
+                $product->save();
+                return response()->json(["product" => $product]);
+            }
         }
-        $product = Product::find($product_id);
+    }
+    
+    public function removeEvent($product_id) {
+        $user = request()->user();
+        if ($user->role != "admin") {
+            return response()->json(["message"=> "unauthorized"]);    
+        } else {
+            $product = Product::find($product_id);
+            if (!$product) {
+                return response()->json(["message"=> "product not found"]);    
+            } else {
+                $product->is_event = "no";
+                $product->save();
+                return response()->json(["product" => $product]);    
+            }
+        }
+    }
+    public function show($product_id) {
+        $product = Product::with("category")->with("images")->find($product_id);
         if (!$product) {
             return response()->json(["message" => "product not found"]);
+        } else {
+            foreach ($product->images as $image) {
+                $image->image = Storage::url($image->image);
+            }
+            $product->image = Storage::url($product->image);
+            return response()->json(["product" => $product]);
         }
+    }
 
-        $product->image = Storage::url($product->image);
+     public function categoryProducts($category_id) {
+        $products = Product::where("category_id", $category_id)->with("category")->latest()->get();
+        foreach ($products as $product) {
+            $product->image = Storage::url($product->image);
+        }
+        return response()->json(["products" => $products]);
+    }
 
-        return response()->json($product);
+    public function events() {
+            $products = Product::where("is_event", "yes")->with("category")->latest()->get();
+            foreach ($products as $product) {
+                $product->image = Storage::url($product->image);
+            }
+            return response()->json(["products" => $products]);
+    }
+
+    public function landing() {
+        $products = Category::with(["products" => function($query) {
+            $query->orderBy("id","desc")->take(5);
+        }])->get();
+        foreach ($products as $product) {
+            foreach ($product->products as $product) {
+                $product->image = Storage::url($product->image);
+            }
+        }
+        return response()->json(["products" => $products]);
+    }
+
+    public function searchCategoryProducts($category_id) {
+        $search = request("search");
+        $products = Product::where("category_id", $category_id)->where("name", "like", "%{$search}%")->with("category")->latest()->get();
+        foreach ($products as $product) {
+            $product->image = Storage::url($product->image);
+        }
+        return response()->json(["products" => $products]);
     }
 }
