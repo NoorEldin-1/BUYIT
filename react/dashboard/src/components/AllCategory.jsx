@@ -8,7 +8,7 @@ import {
 import { DrawerHeader, Main } from "./Dashboard";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   changeCategoryInfo,
   getAllCategoriesPaginated,
@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
 import { changeDialog } from "../features/dialogSlice";
 import { useNavigate } from "react-router";
-import { Accordion, AccordionDetails, AccordionSummary } from "../App";
+import { Accordion, AccordionDetails, AccordionSummary } from "./Dashboard";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
 
 const AllCategory = ({ open }) => {
@@ -146,42 +146,55 @@ const AllCategory = ({ open }) => {
     dispatch(getAllCategoriesPaginated());
   }, [dispatch]);
 
-  return (
-    <Main open={open} sx={{ overflow: "hidden" }}>
-      <DrawerHeader />
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        <Typography
-          variant="h6"
-          fontWeight={"bold"}
-          textTransform={"uppercase"}
-        >
-          categories
-        </Typography>
-        {loading ? (
-          <CircularProgress
-            sx={{
-              display: "flex",
-              mx: "auto",
-            }}
-          />
-        ) : (
-          <>
-            {categories}
-            <Button
-              variant="outlined"
-              sx={{ width: "fit-content", ml: "auto" }}
-              startIcon={<MoreTimeIcon />}
-              disabled={getNextCategoriesLoading || nextCategoriesLink === null}
-              loading={getNextCategoriesLoading}
-              onClick={() => dispatch(getNextCategories(nextCategoriesLink))}
-            >
-              show more
-            </Button>
-          </>
-        )}
-      </Box>
-    </Main>
-  );
+  const element = useMemo(() => {
+    return (
+      <Main open={open} sx={{ overflow: "hidden" }}>
+        <DrawerHeader />
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <Typography
+            variant="h6"
+            fontWeight={"bold"}
+            textTransform={"uppercase"}
+          >
+            categories
+          </Typography>
+          {loading ? (
+            <CircularProgress
+              sx={{
+                display: "flex",
+                mx: "auto",
+              }}
+            />
+          ) : (
+            <>
+              {categories}
+              <Button
+                variant="outlined"
+                sx={{ width: "fit-content", ml: "auto" }}
+                startIcon={<MoreTimeIcon />}
+                disabled={
+                  getNextCategoriesLoading || nextCategoriesLink === null
+                }
+                loading={getNextCategoriesLoading}
+                onClick={() => dispatch(getNextCategories(nextCategoriesLink))}
+              >
+                show more
+              </Button>
+            </>
+          )}
+        </Box>
+      </Main>
+    );
+  }, [
+    categories,
+    dispatch,
+    getNextCategoriesLoading,
+    loading,
+    nextCategoriesLink,
+    open,
+  ]);
+
+  return element;
 };
 
 export default AllCategory;

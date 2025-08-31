@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAllNextProducts,
@@ -18,7 +18,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router";
 import { changeDialog } from "../features/dialogSlice";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
-import { Accordion, AccordionDetails, AccordionSummary } from "../App";
+import { Accordion, AccordionDetails, AccordionSummary } from "./Dashboard";
 import CategoryIcon from "@mui/icons-material/Category";
 import EventIcon from "@mui/icons-material/Event";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
@@ -55,9 +55,7 @@ const AllProducts = ({ open }) => {
       return (
         <Accordion key={row.id}>
           <AccordionSummary>
-            <Typography component="span">
-              {row.name} #{row.id}
-            </Typography>
+            <Typography component="span">{row.name}</Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ wordBreak: "break-word" }}>
             <Typography
@@ -181,42 +179,53 @@ const AllProducts = ({ open }) => {
     }
   }, [rows, singleRow]);
 
-  return (
-    <Main open={open} sx={{ overflow: "hidden" }}>
-      <DrawerHeader />
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        <Typography
-          variant="h6"
-          fontWeight={"bold"}
-          textTransform={"uppercase"}
-        >
-          products
-        </Typography>
-        {loading ? (
-          <CircularProgress
-            sx={{
-              display: "flex",
-              mx: "auto",
-            }}
-          />
-        ) : (
-          <>
-            {products}
-            <Button
-              variant="outlined"
-              sx={{ width: "fit-content", ml: "auto" }}
-              startIcon={<MoreTimeIcon />}
-              disabled={getNextProductsLoading || nextProductsLink === null}
-              loading={getNextProductsLoading}
-              onClick={() => dispatch(getAllNextProducts(nextProductsLink))}
-            >
-              show more
-            </Button>
-          </>
-        )}
-      </Box>
-    </Main>
-  );
+  const element = useMemo(() => {
+    return (
+      <Main open={open} sx={{ overflow: "hidden" }}>
+        <DrawerHeader />
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <Typography
+            variant="h6"
+            fontWeight={"bold"}
+            textTransform={"uppercase"}
+          >
+            products
+          </Typography>
+          {loading ? (
+            <CircularProgress
+              sx={{
+                display: "flex",
+                mx: "auto",
+              }}
+            />
+          ) : (
+            <>
+              {products}
+              <Button
+                variant="outlined"
+                sx={{ width: "fit-content", ml: "auto" }}
+                startIcon={<MoreTimeIcon />}
+                disabled={getNextProductsLoading || nextProductsLink === null}
+                loading={getNextProductsLoading}
+                onClick={() => dispatch(getAllNextProducts(nextProductsLink))}
+              >
+                show more
+              </Button>
+            </>
+          )}
+        </Box>
+      </Main>
+    );
+  }, [
+    dispatch,
+    getNextProductsLoading,
+    loading,
+    nextProductsLink,
+    open,
+    products,
+  ]);
+
+  return element;
 };
 
 export default AllProducts;

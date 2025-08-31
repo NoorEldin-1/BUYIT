@@ -2,7 +2,7 @@ import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiAppBar from "@mui/material/AppBar";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import MainWidget from "./MainWidget";
 import Side from "./Side";
 import NavBar from "./NavBar";
@@ -31,6 +31,11 @@ import {
   getTotalCategories,
 } from "../features/categorySlice";
 import { getLatestProducts, getTotalProducts } from "../features/productSlice";
+import MuiAccordion from "@mui/material/Accordion";
+import MuiAccordionSummary from "@mui/material/AccordionSummary";
+import MuiAccordionDetails from "@mui/material/AccordionDetails";
+import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
+import { accordionSummaryClasses } from "@mui/material/AccordionSummary";
 
 export const drawerWidth = 240;
 
@@ -88,69 +93,136 @@ export const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
+export const Accordion = styled((props) => (
+  <MuiAccordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+  border: `1px solid ${theme.palette.divider}`,
+  "&:not(:last-child)": {
+    borderBottom: 0,
+  },
+  "&::before": {
+    display: "none",
+  },
+}));
+
+export const AccordionSummary = styled((props) => (
+  <MuiAccordionSummary
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
+    {...props}
+  />
+))(({ theme }) => ({
+  backgroundColor: "rgba(0, 0, 0, .03)",
+  flexDirection: "row-reverse",
+  [`& .${accordionSummaryClasses.expandIconWrapper}.${accordionSummaryClasses.expanded}`]:
+    {
+      transform: "rotate(90deg)",
+    },
+  [`& .${accordionSummaryClasses.content}`]: {
+    marginLeft: theme.spacing(1),
+  },
+  ...theme.applyStyles("dark", {
+    backgroundColor: "rgba(255, 255, 255, .05)",
+  }),
+}));
+
+export const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: "1px solid rgba(0, 0, 0, .125)",
+}));
+
 const Dashboard = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   const dialog = useSelector((state) => state.dialog);
 
+  const handleDrawerOpen = useCallback(() => {
+    setOpen(true);
+  }, []);
+
+  const handleDrawerClose = useCallback(() => {
+    setOpen(false);
+  }, []);
+
   useEffect(() => {
-    let intervalId;
-
-    const fetchData = async () => {
-      await dispatch(getTotalUsers());
-      await dispatch(getTotalCategories());
-      await dispatch(getTotalProducts());
-      await dispatch(getLatestUsers());
-      await dispatch(getLatestCategories());
-      await dispatch(getLatestProducts());
-    };
-
-    fetchData();
-
-    intervalId = setInterval(fetchData, 30 * 60 * 1000);
-
-    return () => clearInterval(intervalId);
+    dispatch(getTotalUsers());
+    dispatch(getTotalCategories());
+    dispatch(getTotalProducts());
+    dispatch(getLatestUsers());
+    dispatch(getLatestCategories());
+    dispatch(getLatestProducts());
   }, [dispatch]);
 
-  return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <Side open={open} handleDrawerClose={handleDrawerClose} />
-      <NavBar open={open} handleDrawerOpen={handleDrawerOpen} />
-      <Routes>
-        <Route path="/" element={<MainWidget open={open} />} />
-        <Route path="/edit-account" element={<EditAccount open={open} />} />
-        <Route path="/all-categories" element={<AllCategory open={open} />} />
-        <Route path="/create-product" element={<CreateProduct open={open} />} />
-        <Route path="/all-products" element={<AllProducts open={open} />} />
-        <Route path="/edit-product/:id" element={<EditProduct open={open} />} />
-        <Route
-          path="/category/:id"
-          element={<CategoryProducts open={open} />}
-        />
-        <Route path="/users" element={<AllUsers open={open} />} />
-        <Route path="/events" element={<Events open={open} />} />
-      </Routes>
-      {dialog === "logout" && <Logout />}
-      {dialog === "createCategory" && <CreateCategory />}
-      {dialog === "deleteCategory" && <DeleteCategory />}
-      {dialog === "editCategory" && <EditCategory />}
-      {dialog === "deleteImage" && <DeleteImage />}
-      {dialog === "deleteProduct" && <DeleteProduct />}
-      {dialog === "deleteUser" && <DeleteUser />}
-      {dialog === "addEvent" && <AddEvent />}
-      {dialog === "removeEvent" && <RemoveEvent />}
-    </Box>
-  );
+  const indexElement = useMemo(() => {
+    return (
+      <>
+        <Side open={open} handleDrawerClose={handleDrawerClose} />
+        <NavBar open={open} handleDrawerOpen={handleDrawerOpen} />
+      </>
+    );
+  }, [handleDrawerClose, handleDrawerOpen, open]);
+
+  const dialogs = useMemo(() => {
+    if (dialog === "logout") {
+      return <Logout />;
+    }
+    if (dialog === "createCategory") {
+      return <CreateCategory />;
+    }
+    if (dialog === "deleteCategory") {
+      return <DeleteCategory />;
+    }
+    if (dialog === "editCategory") {
+      return <EditCategory />;
+    }
+    if (dialog === "deleteImage") {
+      return <DeleteImage />;
+    }
+    if (dialog === "deleteProduct") {
+      return <DeleteProduct />;
+    }
+    if (dialog === "deleteUser") {
+      return <DeleteUser />;
+    }
+    if (dialog === "addEvent") {
+      return <AddEvent />;
+    }
+    if (dialog === "removeEvent") {
+      return <RemoveEvent />;
+    }
+    return null;
+  }, [dialog]);
+
+  const element = useMemo(() => {
+    return (
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
+        {indexElement}
+        <Routes>
+          <Route path="/" element={<MainWidget open={open} />} />
+          <Route path="/edit-account" element={<EditAccount open={open} />} />
+          <Route path="/all-categories" element={<AllCategory open={open} />} />
+          <Route
+            path="/create-product"
+            element={<CreateProduct open={open} />}
+          />
+          <Route path="/all-products" element={<AllProducts open={open} />} />
+          <Route
+            path="/edit-product/:id"
+            element={<EditProduct open={open} />}
+          />
+          <Route
+            path="/category/:id"
+            element={<CategoryProducts open={open} />}
+          />
+          <Route path="/users" element={<AllUsers open={open} />} />
+          <Route path="/events" element={<Events open={open} />} />
+        </Routes>
+        {dialogs}
+      </Box>
+    );
+  }, [dialogs, indexElement, open]);
+
+  return element;
 };
 
 export default Dashboard;

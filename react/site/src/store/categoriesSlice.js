@@ -40,15 +40,12 @@ const categoriesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getAllCategories.fulfilled, (state, action) => {
-        console.log(action.payload.categories);
         state.categories = action.payload.categories;
       })
       .addCase(getCategoryProducts.pending, (state) => {
-        console.log("loading...");
         state.getCategoryProductsLoading = true;
       })
       .addCase(getCategoryProducts.fulfilled, (state, action) => {
-        console.log(action.payload.products);
         state.getCategoryProductsLoading = false;
         action.payload.products.map((product) => {
           product.image = `${fileUrl}${product.image}`;
@@ -56,11 +53,9 @@ const categoriesSlice = createSlice({
         state.categoryProducts = action.payload.products;
       })
       .addCase(getSearchCategoryProducts.pending, (state) => {
-        console.log("loading...");
         state.getCategoryProductsLoading = true;
       })
       .addCase(getSearchCategoryProducts.fulfilled, (state, action) => {
-        console.log(action.payload.products);
         state.getCategoryProductsLoading = false;
         action.payload.products.map((product) => {
           product.image = `${fileUrl}${product.image}`;

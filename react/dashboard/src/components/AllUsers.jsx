@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers, setUserInfo } from "../features/userSlice";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CircularProgress, IconButton, Typography } from "@mui/material";
 import { DrawerHeader, Main } from "./Dashboard";
-import { Accordion, AccordionDetails, AccordionSummary } from "../App";
+import { Accordion, AccordionDetails, AccordionSummary } from "./Dashboard";
 import { Box } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { changeDialog } from "../features/dialogSlice";
@@ -100,21 +100,25 @@ const AllUsers = ({ open }) => {
     }
   }, [allUsers, singleRow]);
 
-  return (
-    <Main open={open} sx={{ overflow: "hidden" }}>
-      <DrawerHeader />
-      {getAllUsersLoading ? (
-        <CircularProgress
-          sx={{
-            display: "flex",
-            mx: "auto",
-          }}
-        />
-      ) : (
-        users
-      )}
-    </Main>
-  );
+  const element = useMemo(() => {
+    return (
+      <Main open={open} sx={{ overflow: "hidden" }}>
+        <DrawerHeader />
+        {getAllUsersLoading ? (
+          <CircularProgress
+            sx={{
+              display: "flex",
+              mx: "auto",
+            }}
+          />
+        ) : (
+          users
+        )}
+      </Main>
+    );
+  }, [getAllUsersLoading, open, users]);
+
+  return element;
 };
 
 export default AllUsers;

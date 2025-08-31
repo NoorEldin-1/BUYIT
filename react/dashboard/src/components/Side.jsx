@@ -71,33 +71,37 @@ const Side = ({ handleDrawerClose, open }) => {
     );
   }, [dispatch, navigate]);
 
-  return (
-    <Drawer
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
+  const element = useMemo(() => {
+    return (
+      <Drawer
+        sx={{
           width: drawerWidth,
-          boxSizing: "border-box",
-        },
-      }}
-      variant="persistent"
-      anchor="left"
-      open={open}
-    >
-      <DrawerHeader>
-        <IconButton onClick={handleDrawerClose}>
-          {theme.direction === "ltr" ? (
-            <ChevronLeftIcon />
-          ) : (
-            <ChevronRightIcon />
-          )}
-        </IconButton>
-      </DrawerHeader>
-      <Divider />
-      {dashboardList}
-    </Drawer>
-  );
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: drawerWidth,
+            boxSizing: "border-box",
+          },
+        }}
+        variant="persistent"
+        anchor="left"
+        open={open}
+      >
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === "ltr" ? (
+              <ChevronLeftIcon />
+            ) : (
+              <ChevronRightIcon />
+            )}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        {dashboardList}
+      </Drawer>
+    );
+  }, [dashboardList, handleDrawerClose, open, theme.direction]);
+
+  return element;
 };
 
 export default Side;

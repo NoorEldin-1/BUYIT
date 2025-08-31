@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setProductId, showCategoryProducts } from "../features/productSlice";
 import {
@@ -13,7 +13,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate, useParams } from "react-router";
 import { changeDialog } from "../features/dialogSlice";
-import { Accordion, AccordionDetails, AccordionSummary } from "../App";
+import { Accordion, AccordionDetails, AccordionSummary } from "./Dashboard";
 import EventIcon from "@mui/icons-material/Event";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 
@@ -157,30 +157,34 @@ const CategoryProducts = ({ open }) => {
     }
   }, [dispatch, navigate, rows, singleRow, theme.palette.background.default]);
 
-  return (
-    <Main open={open} sx={{ overflow: "hidden" }}>
-      <DrawerHeader />
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        <Typography
-          variant="h6"
-          fontWeight={"bold"}
-          textTransform={"uppercase"}
-        >
-          category products
-        </Typography>
-        {loading ? (
-          <CircularProgress
-            sx={{
-              display: "flex",
-              mx: "auto",
-            }}
-          />
-        ) : (
-          products
-        )}
-      </Box>
-    </Main>
-  );
+  const element = useMemo(() => {
+    return (
+      <Main open={open} sx={{ overflow: "hidden" }}>
+        <DrawerHeader />
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <Typography
+            variant="h6"
+            fontWeight={"bold"}
+            textTransform={"uppercase"}
+          >
+            category products
+          </Typography>
+          {loading ? (
+            <CircularProgress
+              sx={{
+                display: "flex",
+                mx: "auto",
+              }}
+            />
+          ) : (
+            products
+          )}
+        </Box>
+      </Main>
+    );
+  }, [loading, open, products]);
+
+  return element;
 };
 
 export default CategoryProducts;

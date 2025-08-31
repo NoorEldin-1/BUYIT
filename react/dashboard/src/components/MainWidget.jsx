@@ -7,7 +7,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { Accordion, AccordionDetails, AccordionSummary } from "../App";
+import { Accordion, AccordionDetails, AccordionSummary } from "./Dashboard";
 
 const MainWidget = ({ open }) => {
   const navigate = useNavigate();
@@ -303,73 +303,86 @@ const MainWidget = ({ open }) => {
     }
   }, [allLatestProducts, allLatestProducts.length, singleProductRow]);
 
-  return (
-    <Main open={open} sx={{ overflow: "hidden" }}>
-      <DrawerHeader />
-      {totalWidgetsList}
-      <Box sx={{ display: "flex", gap: "40px", flexDirection: "column" }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <Typography
-            variant="h6"
-            fontWeight={"bold"}
-            textTransform={"uppercase"}
-          >
-            latest users
-          </Typography>
-          {latestUsersLoading ? (
-            <CircularProgress
-              sx={{
-                display: "flex",
-                mx: "auto",
-              }}
-            />
-          ) : (
-            latestUsers
-          )}
-        </Box>
+  const element = useMemo(() => {
+    return (
+      <Main open={open} sx={{ overflow: "hidden" }}>
+        <DrawerHeader />
+        {totalWidgetsList}
+        <Box sx={{ display: "flex", gap: "40px", flexDirection: "column" }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <Typography
+              variant="h6"
+              fontWeight={"bold"}
+              textTransform={"uppercase"}
+            >
+              latest users
+            </Typography>
+            {latestUsersLoading ? (
+              <CircularProgress
+                sx={{
+                  display: "flex",
+                  mx: "auto",
+                }}
+              />
+            ) : (
+              latestUsers
+            )}
+          </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <Typography
-            variant="h6"
-            fontWeight={"bold"}
-            textTransform={"uppercase"}
-          >
-            latest categories
-          </Typography>
-          {latestCategoriesLoading ? (
-            <CircularProgress
-              sx={{
-                display: "flex",
-                mx: "auto",
-              }}
-            />
-          ) : (
-            latestCategories
-          )}
-        </Box>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <Typography
+              variant="h6"
+              fontWeight={"bold"}
+              textTransform={"uppercase"}
+            >
+              latest categories
+            </Typography>
+            {latestCategoriesLoading ? (
+              <CircularProgress
+                sx={{
+                  display: "flex",
+                  mx: "auto",
+                }}
+              />
+            ) : (
+              latestCategories
+            )}
+          </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <Typography
-            variant="h6"
-            fontWeight={"bold"}
-            textTransform={"uppercase"}
-          >
-            latest products
-          </Typography>
-          {latestProductsLoading ? (
-            <CircularProgress
-              sx={{
-                display: "flex",
-                mx: "auto",
-              }}
-            />
-          ) : (
-            latestProducts
-          )}
+          <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <Typography
+              variant="h6"
+              fontWeight={"bold"}
+              textTransform={"uppercase"}
+            >
+              latest products
+            </Typography>
+            {latestProductsLoading ? (
+              <CircularProgress
+                sx={{
+                  display: "flex",
+                  mx: "auto",
+                }}
+              />
+            ) : (
+              latestProducts
+            )}
+          </Box>
         </Box>
-      </Box>
-    </Main>
-  );
+      </Main>
+    );
+  }, [
+    latestCategories,
+    latestCategoriesLoading,
+    latestProducts,
+    latestProductsLoading,
+    latestUsers,
+    latestUsersLoading,
+    open,
+    totalWidgetsList,
+  ]);
+
+  return element;
 };
 
 export default MainWidget;

@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { changeDialog } from "../features/dialogSlice";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { deleteUser } from "../features/userSlice";
 
 const DeleteUser = () => {
@@ -25,30 +25,34 @@ const DeleteUser = () => {
     dispatch(deleteUser(userInfo.id));
   }, [userInfo, dispatch]);
 
-  return (
-    <Dialog open={open === "deleteUser"} fullWidth maxWidth="sm">
-      <DialogTitle sx={{ textAlign: "center", textTransform: "uppercase" }}>
-        delete user
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText sx={{ textAlign: "center" }}>
-          Are you sure you want to delete this user?, this action is
-          irreversible.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>cancel</Button>
-        <Button
-          onClick={handleDeleteUser}
-          color="error"
-          disabled={loading}
-          loading={loading}
-        >
-          delete
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
+  const element = useMemo(() => {
+    return (
+      <Dialog open={open === "deleteUser"} fullWidth maxWidth="sm">
+        <DialogTitle sx={{ textAlign: "center", textTransform: "uppercase" }}>
+          delete user
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ textAlign: "center" }}>
+            Are you sure you want to delete this user?, this action is
+            irreversible.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>cancel</Button>
+          <Button
+            onClick={handleDeleteUser}
+            color="error"
+            disabled={loading}
+            loading={loading}
+          >
+            delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }, [handleClose, handleDeleteUser, loading, open]);
+
+  return element;
 };
 
 export default DeleteUser;

@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { changeDialog } from "../features/dialogSlice";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { logout } from "../features/authSlice";
 
 const Logout = () => {
@@ -24,29 +24,33 @@ const Logout = () => {
     dispatch(logout());
   }, [dispatch]);
 
-  return (
-    <Dialog open={open === "logout"} fullWidth maxWidth="xs">
-      <DialogTitle sx={{ textAlign: "center", textTransform: "uppercase" }}>
-        logout
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText sx={{ textAlign: "center" }}>
-          Are you sure you want to logout?
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>cancel</Button>
-        <Button
-          onClick={handleLogout}
-          color="error"
-          disabled={loading}
-          loading={loading}
-        >
+  const element = useMemo(() => {
+    return (
+      <Dialog open={open === "logout"} fullWidth maxWidth="xs">
+        <DialogTitle sx={{ textAlign: "center", textTransform: "uppercase" }}>
           logout
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ textAlign: "center" }}>
+            Are you sure you want to logout?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>cancel</Button>
+          <Button
+            onClick={handleLogout}
+            color="error"
+            disabled={loading}
+            loading={loading}
+          >
+            logout
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }, [handleClose, handleLogout, loading, open]);
+
+  return element;
 };
 
 export default Logout;

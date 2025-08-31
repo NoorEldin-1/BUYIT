@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\Save;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -221,6 +222,8 @@ class ProductController extends Controller
                 $product->image = Storage::url($product->image);
             }
         }
+
+        
         return response()->json(["products" => $products]);
     }
 

@@ -15,7 +15,6 @@ const eventsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getAllEvents.fulfilled, (state, action) => {
-      console.log(action.payload);
       action.payload.products.map((product) => {
         product.image = `${fileUrl}${product.image}`;
       });

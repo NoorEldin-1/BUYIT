@@ -5,15 +5,24 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router";
 import { store } from "./store.js";
 import { Provider } from "react-redux";
+import { createTheme, ThemeProvider } from "@mui/material";
 
 export const backendUrl = "http://localhost:8000/api";
 export const fileUrl = "http://localhost:8000";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: "Rubik",
+  },
+});
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-        <App />
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
       </Provider>
     </BrowserRouter>
   </StrictMode>

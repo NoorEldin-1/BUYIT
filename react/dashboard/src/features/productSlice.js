@@ -188,38 +188,6 @@ export const showCategoryProducts = createAsyncThunk(
   }
 );
 
-export const commentsProduct = createAsyncThunk(
-  "commentsProduct",
-  async (product_id) => {
-    const res = await axios.get(`${backendUrl}/product/comments/${product_id}`);
-    return res.data;
-  }
-);
-
-export const deleteCommentProduct = createAsyncThunk(
-  "deleteCommentProduct",
-  async (comment_id) => {
-    const res = await axios.delete(
-      `${backendUrl}/product/deleteComment/${comment_id}/${window.localStorage.getItem(
-        "username"
-      )}/${window.localStorage.getItem("password")}`
-    );
-    return res.data;
-  }
-);
-
-export const savesProduct = createAsyncThunk(
-  "savesProduct",
-  async (product_id) => {
-    const res = await axios.get(
-      `${backendUrl}/product/saves/${product_id}/${window.localStorage.getItem(
-        "username"
-      )}/${window.localStorage.getItem("password")}`
-    );
-    return res.data;
-  }
-);
-
 export const productSlice = createSlice({
   name: "product",
   initialState: {
@@ -231,8 +199,6 @@ export const productSlice = createSlice({
     categoryProducts: [],
     productInfo: {},
     productId: "",
-    comments: [],
-    saves: [],
     imageId: "",
     nextProductsLoading: false,
     latestProductsLoading: false,
@@ -256,19 +222,14 @@ export const productSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getTotalProducts.pending, () => {
-        console.log("loading...");
-      })
+      .addCase(getTotalProducts.pending, () => {})
       .addCase(getTotalProducts.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.totalProducts = action.payload.total;
       })
       .addCase(getLatestProducts.pending, (state) => {
-        console.log("loading...");
         state.latestProductsLoading = true;
       })
       .addCase(getLatestProducts.fulfilled, (state, action) => {
-        console.log(action.payload);
         action.payload.products.data.map((product) => {
           product.image = `${fileUrl}${product.image}`;
           return product;
@@ -277,27 +238,21 @@ export const productSlice = createSlice({
         state.latestProductsLoading = false;
       })
       .addCase(createProduct.pending, (state) => {
-        console.log("loading...");
         state.createProductLoading = true;
       })
       .addCase(createProduct.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.createProductLoading = false;
       })
       .addCase(editProduct.pending, (state) => {
-        console.log("loading...");
         state.editProductLoading = true;
       })
       .addCase(editProduct.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.editProductLoading = false;
       })
       .addCase(addEventProduct.pending, (state) => {
-        console.log("loading...");
         state.addEventProductLoading = true;
       })
       .addCase(addEventProduct.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.addEventProductLoading = false;
         state.products = state.products.map((product) => {
           if (product.id === state.productId) {
@@ -313,11 +268,9 @@ export const productSlice = createSlice({
         });
       })
       .addCase(removeEventProduct.pending, (state) => {
-        console.log("loading...");
         state.removeEventProductLoading = true;
       })
       .addCase(removeEventProduct.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.removeEventProductLoading = false;
         state.products = state.products.map((product) => {
           if (product.id === state.productId) {
@@ -336,11 +289,9 @@ export const productSlice = createSlice({
         });
       })
       .addCase(getAllEvents.pending, (state) => {
-        console.log("loading...");
         state.getAllEventsLoading = true;
       })
       .addCase(getAllEvents.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.getAllEventsLoading = false;
         action.payload.products.map((product) => {
           product.image = `${fileUrl}${product.image}`;
@@ -349,11 +300,9 @@ export const productSlice = createSlice({
         state.events = action.payload.products;
       })
       .addCase(deleteProduct.pending, (state) => {
-        console.log("loading...");
         state.deleteProductLoading = true;
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.deleteProductLoading = false;
         state.products = state.products.filter(
           (product) => product.id !== state.productId
@@ -361,11 +310,9 @@ export const productSlice = createSlice({
         state.productId = "";
       })
       .addCase(getAllProducts.pending, (state) => {
-        console.log("loading...");
         state.getAllProductsLoading = true;
       })
       .addCase(getAllProducts.fulfilled, (state, action) => {
-        console.log(action.payload.products);
         state.getAllProductsLoading = false;
         state.nextProductsLink = action.payload.products.next_page_url;
 
@@ -377,11 +324,9 @@ export const productSlice = createSlice({
         state.products = action.payload.products.data;
       })
       .addCase(getAllNextProducts.pending, (state) => {
-        console.log("loading...");
         state.nextProductsLoading = true;
       })
       .addCase(getAllNextProducts.fulfilled, (state, action) => {
-        console.log(action.payload.products);
         state.nextProductsLoading = false;
         state.nextProductsLink = action.payload.products.next_page_url;
 
@@ -397,26 +342,21 @@ export const productSlice = createSlice({
           image.image = `${fileUrl}${image.image}`;
           return image;
         });
-        console.log(action.payload.product);
         state.productInfo = action.payload.product;
       })
       .addCase(deleteProductImage.pending, (state) => {
-        console.log("loading...");
         state.deleteProductImageLoading = true;
       })
       .addCase(deleteProductImage.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.deleteProductImageLoading = false;
         state.productInfo.images = state.productInfo.images.filter(
           (image) => image.id !== state.imageId
         );
       })
       .addCase(showCategoryProducts.pending, (state) => {
-        console.log("loading...");
         state.showCategoryProductsLoading = true;
       })
       .addCase(showCategoryProducts.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.showCategoryProductsLoading = false;
 
         action.payload.products.map((product) => {
@@ -425,26 +365,6 @@ export const productSlice = createSlice({
         });
 
         state.categoryProducts = action.payload.products;
-      })
-      .addCase(commentsProduct.pending, () => {
-        console.log("loading...");
-      })
-      .addCase(commentsProduct.fulfilled, (state, action) => {
-        console.log(action.payload);
-        state.comments = action.payload;
-      })
-      .addCase(deleteCommentProduct.pending, () => {
-        console.log("loading...");
-      })
-      .addCase(deleteCommentProduct.fulfilled, (_, action) => {
-        console.log(action.payload);
-      })
-      .addCase(savesProduct.pending, () => {
-        console.log("loading...");
-      })
-      .addCase(savesProduct.fulfilled, (state, action) => {
-        console.log(action.payload);
-        state.saves = action.payload;
       });
   },
 });

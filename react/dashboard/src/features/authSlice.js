@@ -65,11 +65,9 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (state) => {
-        console.log("loading...");
         state.loginLoading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.loginLoading = false;
         if (action.payload.message) {
           state.loginErrorMsg = action.payload.message;
@@ -88,7 +86,6 @@ export const authSlice = createSlice({
       })
       .addCase(edit.fulfilled, (state, action) => {
         state.editLoading = false;
-        console.log(action.payload);
 
         if (action.payload.errors) {
           state.editErrorMsg = action.payload.errors.username;

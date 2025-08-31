@@ -2,11 +2,11 @@ import { Box, CircularProgress, IconButton, Typography } from "@mui/material";
 import { DrawerHeader, Main } from "./Dashboard";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { changeDialog } from "../features/dialogSlice";
 import { useNavigate } from "react-router";
-import { Accordion, AccordionDetails, AccordionSummary } from "../App";
+import { Accordion, AccordionDetails, AccordionSummary } from "./Dashboard";
 import { getAllEvents, setProductId } from "../features/productSlice";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 import CategoryIcon from "@mui/icons-material/Category";
@@ -151,30 +151,34 @@ const Events = ({ open }) => {
     }
   }, [rows, singleRow]);
 
-  return (
-    <Main open={open} sx={{ overflow: "hidden" }}>
-      <DrawerHeader />
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        <Typography
-          variant="h6"
-          fontWeight={"bold"}
-          textTransform={"uppercase"}
-        >
-          events
-        </Typography>
-        {loading ? (
-          <CircularProgress
-            sx={{
-              display: "flex",
-              mx: "auto",
-            }}
-          />
-        ) : (
-          events
-        )}
-      </Box>
-    </Main>
-  );
+  const element = useMemo(() => {
+    return (
+      <Main open={open} sx={{ overflow: "hidden" }}>
+        <DrawerHeader />
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <Typography
+            variant="h6"
+            fontWeight={"bold"}
+            textTransform={"uppercase"}
+          >
+            events
+          </Typography>
+          {loading ? (
+            <CircularProgress
+              sx={{
+                display: "flex",
+                mx: "auto",
+              }}
+            />
+          ) : (
+            events
+          )}
+        </Box>
+      </Main>
+    );
+  }, [events, loading, open]);
+
+  return element;
 };
 
 export default Events;

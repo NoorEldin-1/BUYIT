@@ -145,7 +145,6 @@ const CreateProduct = ({ open }) => {
                 file.type.startsWith("image/")
               );
               if (files.length === 0) return;
-              console.log(files);
               setInfo((prev) => ({ ...prev, images: [...files] }));
             }
           }}
@@ -163,7 +162,6 @@ const CreateProduct = ({ open }) => {
               e.target.files[0] &&
               e.target.files[0].type.startsWith("image/")
             ) {
-              console.log(e.target.files[0]);
               setInfo((prev) => ({ ...prev, image: e.target.files[0] }));
             }
           }}

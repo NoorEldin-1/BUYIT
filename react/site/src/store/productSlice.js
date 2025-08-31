@@ -22,11 +22,9 @@ const productSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getProduct.pending, (state) => {
-        console.log("loading...");
         state.getProductLoading = true;
       })
       .addCase(getProduct.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.getProductLoading = false;
         action.payload.product.images.map((image) => {
           image.image = `${fileUrl}${image.image}`;

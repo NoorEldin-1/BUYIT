@@ -5,8 +5,6 @@ const dialogSlice = createSlice({
   initialState: "no dialog",
   reducers: {
     changeDialog: (state, action) => {
-      console.log(action.payload);
-
       return (state = action.payload);
     },
   },

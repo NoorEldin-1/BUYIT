@@ -15,7 +15,6 @@ const landingSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getAllProducts.fulfilled, (state, action) => {
-      console.log(action.payload.products);
       action.payload.products.map((product) => {
         product.products.map((product) => {
           product.image = `${fileUrl}${product.image}`;

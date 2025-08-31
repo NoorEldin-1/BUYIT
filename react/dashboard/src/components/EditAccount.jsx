@@ -1,6 +1,6 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { DrawerHeader, Main } from "./Dashboard";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { edit } from "../features/authSlice";
 
@@ -60,7 +60,6 @@ const EditAccount = ({ open }) => {
       return;
 
     dispatch(edit(info));
-    console.log("edit");
   }, [
     dispatch,
     info,
@@ -69,105 +68,133 @@ const EditAccount = ({ open }) => {
     validation.username,
   ]);
 
-  return (
-    <Main
-      open={open}
-      sx={{
-        display: "grid",
-        placeContent: "center",
-        height: "100vh",
-        overflowX: "hidden",
-      }}
-    >
-      <DrawerHeader />
-      <Box
+  const fullNameElement = useMemo(() => {
+    return (
+      <TextField
+        placeholder="full name"
+        variant="outlined"
+        type="text"
+        label="full name"
+        name="fullName"
+        autoComplete="off"
+        onChange={handleChange}
+        value={info.fullName}
+        helperText={"min: 1 && max: 100"}
+        color={validation.fullName}
+      />
+    );
+  }, [handleChange, info.fullName, validation.fullName]);
+  const passwordElement = useMemo(() => {
+    return (
+      <TextField
+        placeholder="password"
+        variant="outlined"
+        type="password"
+        label="password"
+        name="password"
+        autoComplete="off"
+        onChange={handleChange}
+        value={info.password}
+        helperText={"min: 8"}
+        color={validation.password}
+      />
+    );
+  }, [handleChange, info.password, validation.password]);
+  const usernameElement = useMemo(() => {
+    return (
+      <TextField
+        placeholder="username"
+        variant="outlined"
+        type="text"
+        label="username"
+        name="username"
+        autoComplete="off"
+        onChange={handleChange}
+        value={info.username}
+        helperText={"min: 1 && max: 100"}
+        color={validation.username}
+      />
+    );
+  }, [handleChange, info.username, validation.username]);
+
+  const element = useMemo(() => {
+    return (
+      <Main
+        open={open}
         sx={{
-          bgcolor: "white",
-          display: "flex",
-          flexDirection: "column",
-          width: { xs: "300px", sm: "400px" },
-          gap: "20px",
-          boxShadow: "0px 0 20px 5px rgba(0, 0, 0, 0.1)",
-          padding: "20px",
-          borderRadius: "10px",
+          display: "grid",
+          placeContent: "center",
+          height: "100vh",
+          overflowX: "hidden",
         }}
       >
-        <Typography
-          variant="h4"
-          align="center"
-          textTransform={"uppercase"}
-          fontWeight={"bold"}
+        <DrawerHeader />
+        <Box
+          sx={{
+            bgcolor: "white",
+            display: "flex",
+            flexDirection: "column",
+            width: { xs: "300px", sm: "400px" },
+            gap: "20px",
+            boxShadow: "0px 0 20px 5px rgba(0, 0, 0, 0.1)",
+            padding: "20px",
+            borderRadius: "10px",
+          }}
         >
-          edit account
-        </Typography>
-
-        {error ? (
           <Typography
+            variant="h4"
             align="center"
-            textTransform={"capitalize"}
-            sx={{ color: "red", fontWeight: "bold" }}
+            textTransform={"uppercase"}
+            fontWeight={"bold"}
           >
-            {error}.
+            edit account
           </Typography>
-        ) : (
-          <Typography
-            align="center"
-            textTransform={"capitalize"}
-            sx={{ opacity: 0.5 }}
+
+          {error ? (
+            <Typography
+              align="center"
+              textTransform={"capitalize"}
+              sx={{ color: "red", fontWeight: "bold" }}
+            >
+              {error}.
+            </Typography>
+          ) : (
+            <Typography
+              align="center"
+              textTransform={"capitalize"}
+              sx={{ opacity: 0.5 }}
+            >
+              enter your new credentials.
+            </Typography>
+          )}
+
+          {fullNameElement}
+          {usernameElement}
+          {passwordElement}
+
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleEditAccount}
+            disabled={loading}
+            loading={loading}
           >
-            enter your new credentials.
-          </Typography>
-        )}
+            edit account
+          </Button>
+        </Box>
+      </Main>
+    );
+  }, [
+    error,
+    fullNameElement,
+    handleEditAccount,
+    loading,
+    open,
+    passwordElement,
+    usernameElement,
+  ]);
 
-        <TextField
-          placeholder="full name"
-          variant="outlined"
-          type="text"
-          label="full name"
-          name="fullName"
-          autoComplete="off"
-          onChange={handleChange}
-          value={info.fullName}
-          helperText={"min: 1 && max: 100"}
-          color={validation.fullName}
-        />
-        <TextField
-          placeholder="username"
-          variant="outlined"
-          type="text"
-          label="username"
-          name="username"
-          autoComplete="off"
-          onChange={handleChange}
-          value={info.username}
-          helperText={"min: 1 && max: 100"}
-          color={validation.username}
-        />
-        <TextField
-          placeholder="password"
-          variant="outlined"
-          type="password"
-          label="password"
-          name="password"
-          autoComplete="off"
-          onChange={handleChange}
-          value={info.password}
-          helperText={"min: 8"}
-          color={validation.password}
-        />
-
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleEditAccount}
-          disabled={loading}
-          loading={loading}
-        >
-          edit account
-        </Button>
-      </Box>
-    </Main>
-  );
+  return element;
 };
 
 export default EditAccount;

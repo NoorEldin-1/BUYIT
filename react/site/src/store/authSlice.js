@@ -39,11 +39,6 @@ const authSlice = createSlice({
         state.logoutLoading = false;
         window.localStorage.clear();
         window.location.href = "/";
-      })
-      .addCase(logout.rejected, (state) => {
-        state.logoutLoading = false;
-        window.localStorage.clear();
-        window.location.href = "/";
       });
   },
 });

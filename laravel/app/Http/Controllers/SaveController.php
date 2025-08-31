@@ -9,59 +9,32 @@ use Illuminate\Support\Facades\Storage;
 
 class SaveController extends Controller
 {
-    public function create($product_id) {
+    public function toggleSave($product_id) {
         $product = Product::find($product_id);
         if (!$product) {
             return response()->json(["message" => "product not found"]);
         } else {
-            $save = Save::create([
-                "user_id" => request()->user()->id,
-                "product_id" => $product_id,
-            ]);
-            return response()->json(["save" => $save]);
-        }
-    }
-
-    public function delete($product_id) {
-        $product = Product::find($product_id);
-        if (!$product) {
-            return response()->json(["message"=> "product not found"]);
-        } else {
             $save = Save::where("user_id", request()->user()->id)->where("product_id", $product_id)->first();
-            if (!$save) {
-                return response()->json(["message"=> "save not found"]);
-            } else {
+            if ($save) {
                 $save->delete();
-                return response()->json(["message"=> "saved deleted"]);
+                return response()->json(["message" => "saved deleted"]);
+            } else {
+                $save = Save::create([
+                    "user_id" => request()->user()->id,
+                    "product_id" => $product_id,
+                ]);
+                $save = Save::where("user_id", request()->user()->id)->where("product_id", $product_id)->with("product")->first();
+                $save->product->image = Storage::url($save->product->image);
+                return response()->json(["save" => $save]);
             }
         }
     }
 
-    public function product($product_id) {
-        $user = request()->user();
-        if ($user->role != "admin") {
-            return response()->json(["message"=> "unauthorized"]);
-        } else {
-            $product = Product::find($product_id);
-            if (!$product) {
-                return response()->json(["message"=> "product not found"]);
-            } else {
-                $saves = Save::where("product_id", $product_id)->with("user")->get();
-                return response()->json(["saves"=> $saves]);
-            }
+    public function all() {
+        $saves = Save::where("user_id", request()->user()->id)->with("product")->latest()->get();
+        foreach ($saves as $save) {
+            $save->product->image = Storage::url($save->product->image);
         }
-    }
-        
-    public function user($user_id) {
-        $user = request()->user();
-        if ($user->role != "admin") {
-            return response()->json(["message"=> "unauthorized"]);
-        } else {
-            $saves = Save::where("user_id", $user_id)->with("product")->get();
-            foreach ($saves as $save) {
-                $save->product->image = Storage::url($save->product->image);
-            }
-            return response()->json(["saves"=> $saves]);
-        }
+        return response()->json(["saves"=> $saves]);
     }
 }

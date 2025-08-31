@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -12,16 +11,15 @@ use Laravel\Socialite\Facades\Socialite;
 class UserController extends Controller
 {
 
-    public function all() {
+    public function total() {
         $user = request()->user();
         if ($user->role != "admin") {
             return response()->json(["message"=> "unauthorized"]);    
         } else {
-            $users = User::where("role", "user")->get();
-            return response()->json(["users" => $users]);    
+            $total = User::where("role", "user")->count();
+            return response()->json(["total"=> $total]);    
         }
     }
-
     public function latest() {
         $user = request()->user();
         if ($user->role != "admin") {
@@ -31,28 +29,15 @@ class UserController extends Controller
             return response()->json(["users" => $users]);    
         }
     }
-    public function signup() {
-        $validator = Validator::make(request()->all(), [
-            "fullName" => "required|string|max:100",
-            "username" => "required|string|max:100|unique:users",
-            "password" => "required|string|min:8",
-            "confirm_password" => "required|string|min:8|same:password",
-        ]);
-        if ($validator->fails()) {
-            return response()->json(["errors" => $validator->errors()]);
+    public function all() {
+        $user = request()->user();
+        if ($user->role != "admin") {
+            return response()->json(["message"=> "unauthorized"]);    
         } else {
-            $user = User::create([
-                "full_name" => request("fullName"),
-                "username" => request("username"),
-                "password" => request("password"),
-            ]);
-
-            $token = $user->createToken("auth-token")->plainTextToken;
-
-            return response()->json(["user" => $user, "token" => $token]);
+            $users = User::where("role", "user")->get();
+            return response()->json(["users" => $users]);    
         }
     }
-
     public function adminLogin() {
         $user = User::where("username", request("username"))->first();
         if (!$user) {
@@ -68,20 +53,6 @@ class UserController extends Controller
         $token = $user->createToken("auth-token")->plainTextToken;
         return response()->json(["user" => $user, "token" => $token]);
     }
-
-    public function userLogin() {
-        $user = User::where("username", request("username"))->first();
-        if (!$user) {
-            return response()->json(["message"=> "credentials error"]);
-        }
-        if (!Hash::check(request("password"), $user->password)) {
-            return response()->json(["message"=> "credentials error"]);
-        }
-
-        $token = $user->createToken("auth-token")->plainTextToken;
-        return response()->json(["user" => $user, "token" => $token]);
-    }
-
     public function editAdmin() {
         $user = request()->user();
         if ($user->role != "admin") {
@@ -118,18 +89,6 @@ class UserController extends Controller
             }
         }
     }
-
-    public function toggleRole() {
-        $user = request()->user();
-        if ($user->role != "admin") {
-            return response()->json(["message"=> "unauthorized"]);    
-        } else {
-            $user->role = $user->role == "admin" ? "user" : "admin";
-            $user->save();
-            return response()->json(["user" => $user]);
-        }
-    }
-
     public function deleteUser($user_id) {
         $user = request()->user();
         if ($user->role != "admin") {
@@ -144,31 +103,9 @@ class UserController extends Controller
             }
         }
     }
-
-    public function logout() {
-        $user = request()->user();
-        if ($user) {
-            $user->tokens()->delete();
-            return response()->json(["message"=> "logout successfully"], 200);    
-        } else {
-            return response()->json(["message"=> "logout successfully"], 200);    
-        }
-    }
-
-    public function total() {
-        $user = request()->user();
-        if ($user->role != "admin") {
-            return response()->json(["message"=> "unauthorized"]);    
-        } else {
-            $total = User::where("role", "user")->count();
-            return response()->json(["total"=> $total]);    
-        }
-    }
-
     public function googleRedirect() {
         return Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
     }
-
     public function googleCallback() {
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
@@ -195,6 +132,15 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+    public function logout() {
+        $user = request()->user();
+        if ($user) {
+            $user->tokens()->delete();
+            return response()->json(["message"=> "logout successfully"], 200);    
+        } else {
+            return response()->json(["message"=> "logout successfully"], 200);    
         }
     }
 }

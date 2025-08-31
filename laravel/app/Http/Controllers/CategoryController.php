@@ -95,13 +95,4 @@ class CategoryController extends Controller
         $categories = Category::withCount("products")->latest()->simplePaginate(5);
         return response()->json(["categories" => $categories]);
     }
-
-    public function show($id) {
-        $category = Category::withCount("products")->find($id);
-        if ($category) {
-            return response()->json(["category" => $category]);
-        } else {
-            return response()->json(["message" => "category not found"]);
-        }
-    }
 }
