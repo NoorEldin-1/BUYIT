@@ -76,3 +76,19 @@ The project consists of two main parts:
 - Full admin panel for managing products, users, and sections.
 
 ---
+
+---
+
+## 🎬 Demo Video
+
+Check out a quick demo of BUYIT in action:
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=e2hyWH_2Qhs" target="_blank">
+    <img src="https://img.youtube.com/vi/e2hyWH_2Qhs/hqdefault.jpg" alt="BUYIT Demo Video" width="480" style="border-radius: 12px; box-shadow: 0 2px 8px #0002;"/>
+  </a>
+</p>
+
+[Watch on YouTube](https://www.youtube.com/watch?v=e2hyWH_2Qhs)
+
+---
