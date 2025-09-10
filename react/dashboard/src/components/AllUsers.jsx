@@ -33,9 +33,7 @@ const AllUsers = ({ open }) => {
       return (
         <Accordion key={row.id}>
           <AccordionSummary>
-            <Typography component="span">
-              {row.full_name} #{row.id}
-            </Typography>
+            <Typography component="span">{row.full_name}</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Typography
@@ -44,7 +42,7 @@ const AllUsers = ({ open }) => {
               textTransform={"uppercase"}
               display={"inline"}
             >
-              full_name:{" "}
+              full name:{" "}
             </Typography>
             {row.full_name}
             <br />

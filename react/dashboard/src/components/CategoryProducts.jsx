@@ -47,9 +47,7 @@ const CategoryProducts = ({ open }) => {
       return (
         <Accordion key={row.id}>
           <AccordionSummary>
-            <Typography component="span">
-              {row.name} #{row.id}
-            </Typography>
+            <Typography component="span">{row.name}</Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ wordBreak: "break-word" }}>
             <Typography

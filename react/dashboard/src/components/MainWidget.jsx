@@ -145,9 +145,7 @@ const MainWidget = ({ open }) => {
     return (
       <Accordion key={row.id}>
         <AccordionSummary>
-          <Typography component="span">
-            {row.full_name} #{row.id}
-          </Typography>
+          <Typography component="span">{row.full_name}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography
@@ -178,9 +176,7 @@ const MainWidget = ({ open }) => {
     return (
       <Accordion key={row.id}>
         <AccordionSummary>
-          <Typography component="span">
-            {row.name} #{row.id}
-          </Typography>
+          <Typography component="span">{row.name}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography
@@ -211,9 +207,7 @@ const MainWidget = ({ open }) => {
     return (
       <Accordion key={row.id}>
         <AccordionSummary>
-          <Typography component="span">
-            {row.name} #{row.id}
-          </Typography>
+          <Typography component="span">{row.name}</Typography>
         </AccordionSummary>
         <AccordionDetails sx={{ wordBreak: "break-word" }}>
           <Typography

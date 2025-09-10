@@ -20,6 +20,7 @@ import { changeDialog } from "../features/dialogSlice";
 import { useNavigate } from "react-router";
 import { Accordion, AccordionDetails, AccordionSummary } from "./Dashboard";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
+import { formatRelativeTime } from "../main";
 
 const AllCategory = ({ open }) => {
   const navigate = useNavigate();
@@ -65,9 +66,7 @@ const AllCategory = ({ open }) => {
       return (
         <Accordion key={row.id}>
           <AccordionSummary>
-            <Typography component="span">
-              {row.name} #{row.id}
-            </Typography>
+            <Typography component="span">{row.name}</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Typography
@@ -88,7 +87,7 @@ const AllCategory = ({ open }) => {
             >
               created at:{" "}
             </Typography>
-            {row.created_at}
+            {formatRelativeTime(row.created_at)}
             <br />
             <Typography
               variant="body2"
