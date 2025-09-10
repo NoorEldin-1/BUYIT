@@ -34,14 +34,8 @@ The project consists of two main parts:
 <a href="https://mui.com/" target="_blank">
   <img src="https://raw.githubusercontent.com/mui/material-ui/master/docs/public/static/logo.svg" alt="MUI" width="50"/>
 </a>
-<a href="https://emotion.sh/docs/introduction" target="_blank">
-  <img src="https://raw.githubusercontent.com/emotion-js/emotion/main/emotion.png" alt="Emotion" width="50"/>
-</a>
 <a href="https://redux-toolkit.js.org/" target="_blank">
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/redux/redux-original.svg" alt="Redux Toolkit" width="50"/>
-</a>
-<a href="https://reactrouter.com/" target="_blank">
-  <img src="https://raw.githubusercontent.com/remix-run/react-router/main/docs/_assets/react-router.svg" alt="React Router" width="50"/>
 </a>
 <a href="https://axios-http.com/" target="_blank">
   <img src="https://axios-http.com/assets/logo.svg" alt="Axios" width="50"/>
