@@ -1,63 +1,84 @@
-# 🛒 BUYIT
+# BUYIT
 
-A simple and modern **e-commerce platform** that allows users to browse, favorite, and purchase products via **WhatsApp**.  
-The project includes a **control panel** for administrators and a **shopfront website** for customers.
+**BUYIT** is a simple yet powerful **e-commerce project** designed to make buying products as seamless as possible.  
+It leverages **WhatsApp** as the purchase channel, ensuring users can directly communicate with the website owner.
 
----
+The project consists of two main parts:
 
-## 📖 Table of Contents
+1. **Admin Control Panel**
 
-- [Introduction](#-introduction)
-- [Features](#-features)
-- [Technologies Used](#-technologies-used)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [Configuration](#-configuration)
-- [Examples](#-examples)
-- [Troubleshooting](#-troubleshooting)
-- [Contributors](#-contributors)
-- [License](#-license)
+   - Manage products, sections, and users.
+   - Add, edit, or delete product information.
+   - Monitor all activity from a single dashboard.
 
----
-
-## 🚀 Introduction
-
-**BUYIT** simplifies online shopping by integrating with WhatsApp.
-
-- **For Admins:**  
-  Manage products, sections, and users through a powerful control panel.
-
-- **For Users:**
-  - Register easily with **Google Sign-In**.
-  - Add products to your **favorites**.
-  - Use a **cart** system to collect products.
-  - Checkout redirects to WhatsApp with a **pre-filled message** containing product details.
+2. **User Website**
+   - Simple and intuitive interface.
+   - Register instantly with your Google account (one-click login).
+   - Browse products by sections.
+   - Add products to **favorites** for later.
+   - Add items to your **shopping cart** and proceed to purchase.
+   - Purchases are finalized via WhatsApp, where a pre-filled message includes selected product details.
 
 ---
 
-## ✨ Features
+## 🚀 Technologies Used
 
-- 🔑 **Google One-Click Registration**
-- ❤️ Add products to favorites (requires registration)
-- 🛒 Shopping cart functionality
-- 📲 WhatsApp-based checkout
-- 🖥️ Admin dashboard to manage content
+<div align="center">
+
+<a href="https://react.dev/" target="_blank">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="React" width="50"/>
+</a>
+<a href="https://vitejs.dev/" target="_blank">
+  <img src="https://vitejs.dev/logo.svg" alt="Vite" width="50"/>
+</a>
+<a href="https://mui.com/" target="_blank">
+  <img src="https://raw.githubusercontent.com/mui/material-ui/master/docs/public/static/logo.svg" alt="MUI" width="50"/>
+</a>
+<a href="https://emotion.sh/docs/introduction" target="_blank">
+  <img src="https://raw.githubusercontent.com/emotion-js/emotion/main/emotion.png" alt="Emotion" width="50"/>
+</a>
+<a href="https://redux-toolkit.js.org/" target="_blank">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/redux/redux-original.svg" alt="Redux Toolkit" width="50"/>
+</a>
+<a href="https://reactrouter.com/" target="_blank">
+  <img src="https://raw.githubusercontent.com/remix-run/react-router/main/docs/_assets/react-router.svg" alt="React Router" width="50"/>
+</a>
+<a href="https://axios-http.com/" target="_blank">
+  <img src="https://axios-http.com/assets/logo.svg" alt="Axios" width="50"/>
+</a>
+<a href="https://swiperjs.com/" target="_blank">
+  <img src="https://swiperjs.com/images/swiper-logo.svg" alt="Swiper" width="50"/>
+</a>
+<a href="https://eslint.org/" target="_blank">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eslint/eslint-original.svg" alt="ESLint" width="50"/>
+</a>
+<a href="https://laravel.com/" target="_blank">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/laravel/laravel-original.svg" alt="Laravel" width="50"/>
+</a>
+<a href="https://www.mysql.com/" target="_blank">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg" alt="MySQL" width="50"/>
+</a>
+
+</div>
+
+- **React + Vite**: Fast and modern frontend development.
+- **MUI + Emotion**: Elegant, customizable UI with CSS-in-JS styling.
+- **Redux Toolkit + React Router**: State management and client-side routing.
+- **Axios**: For seamless API communication.
+- **Swiper**: Interactive product carousels.
+- **ESLint**: Enforced code consistency and best practices.
+- **Laravel**: Backend API and business logic.
+- **MySQL**: Relational database for persistent data storage.
 
 ---
 
-## 🛠️ Technologies Used
+## ✨ Key Features
 
-Here are the main technologies powering **BUYIT**:
-
-| Technology                       | Logo                                                                                                                                                                                   |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **React + Vite**                 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="40"/> <img src="https://vitejs.dev/logo.svg" width="40"/>                                |
-| **MUI + Emotion**                | <img src="https://mui.com/static/logo.png" width="40"/> <img src="https://emotion.sh/logo-48x48.png" width="40"/>                                                                      |
-| **Redux Toolkit + React Router** | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg" width="40"/> <img src="https://reactrouter.com/_brand/react-router-mark-color.png" width="40"/> |
-| **Axios**                        | <img src="https://axios-http.com/assets/logo.svg" width="40"/>                                                                                                                         |
-| **Swiper**                       | <img src="https://swiperjs.com/images/swiper-logo.svg" width="40"/>                                                                                                                    |
-| **ESLint**                       | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/eslint/eslint-original.svg" width="40"/>                                                                                  |
-| **Laravel**                      | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-plain.svg" width="40"/>                                                                                   |
-| **MySQL**                        | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" width="40"/>                                                                                    |
+- One-click Google login for instant registration.
+- Simple, modern, and mobile-friendly interface.
+- Add products to favorites for easy access later.
+- Secure and easy shopping cart system.
+- WhatsApp-based checkout with pre-filled product details.
+- Full admin panel for managing products, users, and sections.
 
 ---
